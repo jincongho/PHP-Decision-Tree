@@ -20,7 +20,7 @@ $training_set = array(
 	array(array(1, 1, 1), 1),
 );
 
-$orTree = new Jincongho\MachineLearning\DecisionTree;
+$orTree = new Jincongho\DecisionTree\DecisionTree;
 $orTree->setAttrNum(3)->addTrainingSet($training_set)->startTraining();
 
 print_r($orTree->getTree());

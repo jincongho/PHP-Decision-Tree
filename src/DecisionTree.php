@@ -98,32 +98,28 @@ class DecisionTree {
 	}
 
 	protected function transverseTree($tree, $orders, $values) {
-		if (is_a($tree, 'Jincongho\MachineLearning\DecisionTree\TreeLabel')) {
+		if (is_a($tree, 'Jincongho\DecisionTree\TreeLabel')) {
 			return $tree;
 		} else {
-			$val = $tree->{ $values[array_slice($orders, -1)[0]]};
+			$val = $tree->{$values[array_slice($orders, -1)[0]]};
 			return $this->transverseTree($val, array_slice($orders, 0, -1), $values);
 		}
 	}
 
 	protected function getOutputs($training_set) {
 		$outputs = array();
-		foreach ($training_set as $set) {
-			if (!in_array($set[1], $outputs)) {
+		foreach ($training_set as $set) 
+			if (!in_array($set[1], $outputs)) 
 				$outputs[] = $set[1];
-			}
-		}
 
 		return $outputs;
 	}
 
 	protected function getValues($training_set, $column) {
 		$values = array();
-		foreach ($training_set as $set) {
-			if (!in_array($set[0][$column], $values)) {
+		foreach ($training_set as $set) 
+			if (!in_array($set[0][$column], $values)) 
 				$values[] = $set[0][$column];
-			}
-		}
 
 		return $values;
 	}
@@ -151,20 +147,16 @@ class DecisionTree {
 	protected function countEntropy($data) {
 		$count = array();
 		foreach ($data as $set) {
-			if (!isset($count[$set[1]])) {
-				$count[$set[1]] = 0;
-			}
-		}
-
-		foreach ($data as $set) {
-			$count[$set[1]]++;
+			if (!isset($count[$set[1]])) 
+				$count[$set[1]] = 1;
+			else
+				$count[$set[1]]++;
 		}
 
 		$entropy = 0;
 		$total   = array_sum($count);
-		foreach ($count as $value) {
+		foreach ($count as $value) 
 			$entropy += -($value / $total) * log($value / $total, 2);
-		}
 
 		return $entropy;
 	}
@@ -172,22 +164,13 @@ class DecisionTree {
 	protected function countGain($data, $column) {
 		$entropy = $this->countEntropy($data);
 
-		$output = array();
-		foreach ($data as $set) {
-			if (!in_array($set[1], $output)) {
-				$output[] = $set[1];
-			}
-		}
-
 		$count = array();
 		foreach ($data as $set) {
-			if (!isset($count[$set[0][$column]])) {
+			if (!isset($count[$set[0][$column]])) 
 				$count[$set[0][$column]] = array();
-			}
 
-			if (!isset($count[$set[0][$column]][$set[1]])) {
+			if (!isset($count[$set[0][$column]][$set[1]])) 
 				$count[$set[0][$column]][$set[1]] = 0;
-			}
 
 			$count[$set[0][$column]][$set[1]]++;
 		}
@@ -196,9 +179,7 @@ class DecisionTree {
 		$total = count($data);
 		foreach ($count as $key => $values) {
 			$gain -= (array_sum($values) / $total) * $this->countEntropy(array_filter($data, function ($set) use ($column, $key) {
-					if ($set[0][$column] == $key) {
-						return true;
-					}
+					return ($set[0][$column] == $key);
 				}
 			));
 		}
@@ -212,19 +193,17 @@ class DecisionTree {
 		$prob    = array();
 		foreach ($values as $value) {
 			$prob[$value] = array();
-			foreach ($outputs as $out) {
-				$prob[$value][$out] = 0;
-			}
 			foreach ($this->getSetsOf($data, $column, $value) as $set) {
-				$prob[$value][$set[1]]++;
+				if(!isset($prob[$value][$set[1]]))
+					$prob[$value][$set[1]] = 1;
+				else
+					$prob[$value][$set[1]]++;
 			}
 			foreach ($outputs as $out) {
 				$total = count($this->getSetsOf($data, $column, $value, $out));
-				if ($total == 0) {
-					$prob[$value][$out] = 0;
-				} else {
+				$prob[$value][$out] = 0;
+				if ($total != 0)  
 					$prob[$value][$out] = $prob[$value][$out] / $total;
-				}
 			}
 			asort($prob[$value]);
 		}
