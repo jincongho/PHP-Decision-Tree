@@ -23,7 +23,7 @@ $hepTree->setAttrNum(22)->addTrainingSet($training_set)->startTraining();
 //var_dump($hepTree->getGain());
 
 //testing set
-$testing_set = tidyHepatitisData(__DIR__.'/hepatitis.data');
+$testing_set = tidyHepatitisData(__DIR__.'/hepatitis_test.data');
 
 $correct = 0;
 $missing = 0;
