@@ -45,10 +45,11 @@ class DecisionTree {
 	public function startTraining() {
 
 		$this->gain = $this->getGains($this->training_set, $this->attrnum);
+		$gain = array_keys($this->gain);
 		$this->tree = $this->buildTree(
 			$this->training_set,
-			array_slice(array_keys($this->gain), -1),
-			array_slice(array_keys($this->gain), 0, -1)
+			array_pop($gain),
+			$gain
 		);
 
 		return $this->tree;
@@ -57,18 +58,23 @@ class DecisionTree {
 
 	public function classify($instance = array()) {
 		if ((count($instance) < $this->attrnum)) {
-			throw new BadFunctionCallException('Attribute\'s number in instance passed for labelling is unmatched.');
+			throw new \BadFunctionCallException('Attribute\'s number in instance passed for labelling is unmatched.');
 		}
 
 		if (!isset($this->gain)) {
-			throw new BadFunctionCallException('Must run training before labelling.');
+			throw new \BadFunctionCallException('Must run training before labelling.');
 		}
 
-		return $this->transverseTree($this->tree, array_keys($this->gain), $instance);
+		$route = array();
+		foreach($this->gain as $key=>$gain){
+			$route[] = $instance[$key];
+		}
+
+		return $this->transverseTree($this->tree, $route);
 	}
 
 	protected function buildTree($training_set, $target_attr, $attr = array()) {
-		$column  = $target_attr[0];
+		$column  = $target_attr;
 		$outputs = $this->getOutputs($training_set);
 		if (count($outputs) === 1) {
 			return new TreeLabel($outputs[0]);
@@ -89,21 +95,39 @@ class DecisionTree {
 			foreach ($values as $value) {
 				$node[$value] = $this->buildTree(
 					$this->getSetsOf($training_set, $column, $value),
-					array_slice($attr, -1, null),
-					array_slice($attr, 0, -1)
+					array_pop($attr),
+					$attr
 				);
 			}
 			return new TreeNode($node);
 		}
 	}
 
-	protected function transverseTree($tree, $orders, $values) {
-		if (is_a($tree, 'Jincongho\DecisionTree\TreeLabel')) {
+	protected function transverseTree($tree, $values) {
+		/*if (is_a($tree, 'Jincongho\DecisionTree\TreeLabel')) {
 			return $tree;
 		} else {
-			$val = $tree->{$values[array_slice($orders, -1)[0]]};
-			return $this->transverseTree($val, array_slice($orders, 0, -1), $values);
+			try{
+				
+			}catch(\Exception $e){
+				//@TODO
+			}
+			$tree = $tree->{array_pop($values)};
+
+			return $this->transverseTree($tree, $values);
+		}*/
+		while($values){
+			if(is_a($tree, 'Jincongho\DecisionTree\TreeLabel')){
+				break;
+			}else{
+				try{
+					$tree = $tree->{array_pop($values)};
+				}catch(\Exception $e){
+
+				}
+			}
 		}
+		return $tree;
 	}
 
 	protected function getOutputs($training_set) {

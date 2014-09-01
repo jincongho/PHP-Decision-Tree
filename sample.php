@@ -10,14 +10,14 @@
 include_once __DIR__ . '/vendor/autoload.php';
 
 $training_set = array(
-	array(array(0, 0, 0), 0),
-	array(array(0, 0, 1), 1),
-	array(array(0, 1, 0), 1),
-	array(array(0, 1, 1), 1),
-	array(array(1, 0, 0), 1),
-	array(array(1, 0, 1), 1),
-	array(array(1, 1, 0), 1),
-	array(array(1, 1, 1), 1),
+	array(array(0, 'n', 'f'), 0),
+	array(array(0, 'n', 't'), 1),
+	array(array(0, 'y', 'f'), 1),
+	array(array(0, 'y', 't'), 1),
+	array(array(1, 'n', 'f'), 1),
+	array(array(1, 'n', 't'), 1),
+	array(array(1, 'y', 'f'), 1),
+	array(array(1, 'y', 't'), 1),
 );
 
 $orTree = new Jincongho\DecisionTree\DecisionTree;
@@ -28,6 +28,6 @@ print_r($orTree->getTree());
 echo "\nInformation Gain per Attribute(column#, ordered by the ascending): \n";
 var_dump($orTree->getGain());
 
-echo "\nClassify: (1, 1, 0) is ", $orTree->classify(array(1, 1, 0));
+echo "\nClassify: (0, n, f) is ", ($orTree->classify(array(0, 'n', 'f')));
 ?>
 </pre>
