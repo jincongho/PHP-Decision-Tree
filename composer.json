@@ -1,5 +1,5 @@
 {
-	"name"	: "Decision Tree Learning for PHP",
+	"name"	: "jincongho/php-decision-tree",
 	"description"	: "Build decision tree, train the tree and classify new data. Supports multiple discrete value for each attributes, eg: attribute[wind] can have three values (strong, mild, weak).",
 	"license"	: "MIT",
 	"keywords"	: ["machine learning", "decision tree"],
